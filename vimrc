@@ -1,38 +1,51 @@
 filetype on
 
 " in normal model keyboard mapping:
-noremap ; l
-noremap l h
-noremap J 5j
-noremap K 5k
-noremap W 5w
-noremap B 5b
+noremap <silent> ; l
+noremap <silent> l h
+noremap <silent> J 5j
+noremap <silent> K 5k
+noremap <silent> W 5w
+noremap <silent> B 5b
+noremap <C-j> <Esc>0i
+noremap <C-k> <Esc>$a
 
+
+" in insert model keyboard mapping:
+imap <C-j> <Esc>0i
+imap <C-k> <Esc>$a
 
 " map <SPACE> <nop>
 map s <nop>
 map S :w<CR>
 map Q :q<CR>
 
+" map <LEADER>p "+p
+" map <LEADER>y "+y
+
 " set <LEADER> as <SPACE>
 let mapleader=" "
 
 " search words
-map <LEADER><CR> :nohlsearch<CR>
+map <silent> <LEADER><CR> :nohlsearch<CR>
 
-" ===
-" ===Window management
-" ===
+" ==<silent> =
+" ==<silent> =Window management
+" ==<silent> =
 " use <LEADER> + new arrow keys for moving the cursor around windows
-map <LEADER>w <C-w>W
-map <LEADER>j <C-w>j
-map <LEADER>k <C-w>k
-map <LEADER>h <C-w>h
-map <LEADER>; <C-w>l
+map <silent> <LEADER>w <C-w>W
+map <silent> <LEADER>j <C-w>j
+map <silent> <LEADER>k <C-w>k
+map <silent> <LEADER>h <C-w>h
+map <silent> <LEADER>; <C-w>l
 
 " use <LEADER><LEADER> as A
 " map <LEADER><LEADER> A
 
+set updatetime=100
+set encoding=utf-8
+" when file has been changed, autoread
+set autoread
 set number
 set cursorline
 set relativenumber
@@ -56,6 +69,7 @@ set hlsearch
 exec "nohlsearch"
 " 使底部或顶部至少显示5行
 set scrolloff=5
+
 
 " Specify a directory for plugins
 " - For Neovim: stdpath('data') . '/plugged'
@@ -203,3 +217,30 @@ set background=dark
 " 下面两条指令使背景透明
 let g:gruvbox_transparent_bg = 1
 autocmd VimEnter * hi Normal ctermbg=none
+
+
+"===
+"===auto fcitx5
+"===
+let g:input_toggle = 1
+function! Fcitx52en()
+   let s:input_status = system("fcitx5-remote")
+   if s:input_status == 2
+      let g:input_toggle = 1
+      let l:a = system("fcitx5-remote -c")
+   endif
+endfunction
+
+function! Fcitx52zh()
+   let s:input_status = system("fcitx5-remote")
+   if s:input_status != 2 && g:input_toggle == 1
+      let l:a = system("fcitx5-remote -o")
+      let g:input_toggle = 0
+   endif
+endfunction
+
+set ttimeoutlen=150
+"退出插入模式
+autocmd InsertLeave * call Fcitx52en()
+"进入插入模式
+autocmd InsertEnter * call Fcitx52zh()
